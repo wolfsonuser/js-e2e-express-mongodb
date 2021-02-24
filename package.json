@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "jest --detectOpenHandles --coverage",
     "start:dev": "npm run lint && npm run start",
     "start": "node src/index.js --unhandled-rejections=warn",
     "lint": "eslint src/**/*.js --fix"
@@ -36,11 +36,12 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
+    "@azure/cosmos": "^3.9.5",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-react-views": "^0.11.0",
-    "mongodb": "^3.6.2",
+    "mongodb": "^3.6.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "serve-static": "^1.14.1"

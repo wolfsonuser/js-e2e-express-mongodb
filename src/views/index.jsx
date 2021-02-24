@@ -33,7 +33,12 @@ function DataList({ dataItems }) {
                 </th>
             </thead>
             {dataItems.map((item) => {
-                const id = item._id.toString();
+                
+                // MongoDB: _id
+                // SQL API: id
+                
+                const id = item._id ? item._id.toString() : item.id;
+
                 return (
                     <tr key={id} id={id}>
                         <td>{item.name}</td>
@@ -47,7 +52,6 @@ function DataList({ dataItems }) {
         </table>
     );
 }
-
 /* props = {
         data: [],
         dbStatus: false

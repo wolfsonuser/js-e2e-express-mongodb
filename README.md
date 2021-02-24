@@ -3,8 +3,8 @@ page_type: sample
 languages:
 - javascript
 - nodejs
-name: "JavaScript end-to-end - deploy Express.js MongoDB app to App Service from Visual Studio Code"
-description: "Deploy the Express.js application which connects to MongoDB to Azure App Service (on Linux) and a CosmosDB."
+name: "JavaScript end-to-end - deploy Express.js Cosmos DB app to App Service from Visual Studio Code"
+description: "Deploy the Express.js application to Azure App Service (on Linux) and a Cosmos DB."
 products:
 - azure
 - vs-code
@@ -13,7 +13,9 @@ products:
 ---
 # JavaScript end-to-end Express.js app with a MongoDB database
 
-For a complete tutorial, please use the [Microsoft Documentation tutorial found here](https://docs.microsoft.com/azure/developer/javascript/tutorial/web-app-mongodb). 
+* MongoDB tutorial - For a complete tutorial, please use the [Microsoft Documentation tutorial found here](https://docs.microsoft.com/azure/developer/javascript/tutorial/web-app-mongodb). 
+
+### MongoDB tutorial information
 
 The sample code is a JavaScript server written with Express.js and the native MongoDB API. The user adds data ( 2 text fields), can view data, and delete a single row or all rows. 
 
@@ -21,14 +23,17 @@ The programming work is done for you, this tutorial focuses on using the local a
 
 The tutorial demonstrates how to load and run the project locally with VSCode, using extensions, was well as how to run the code remotely on an App service. The tutorial includes creating a CosmosDB resource for the Mongo API, getting the connection information and setting that in the app service configuration setting to connect to a cloud database. 
 
+## Road map
+
+This source code will eventually support all Cosmos DB APIs. You can switch between the APIs using the [feature flag](#azure-cosmos-api-feature-flag). 
+
 ## Sample application
 
 The Node.js app consists of the following elements:
 
 * **Express.js server** hosted on port 8080
-* Simple **React.js server-side view** engine
-* **MongoDB native API** functions to insert, delete, and find data
-
+* Simple **React.js server-side view** engine, found in `src/views`
+* **Azure Cosmos DB** functions to insert, delete, and find data, found in `src/azure`
 
 ## Features
 
@@ -41,6 +46,9 @@ This project framework provides the following features:
 * Create CosmosDB resource 
     * Create database resource for use with MongoDB API
     * Get connection string
+* CosmosDB database type [feature flag](#azure-cosmos-api-feature-flag) supporting
+    * MongoDB 
+    * SQL API
 
 ## Getting Started
 
@@ -92,3 +100,16 @@ This project framework provides the following features:
 The integration request depends on a real database connection, either locally or remotely. 
 
 * Integration test file: test/data-integration.test.js
+
+## Azure Cosmos API feature flag
+
+1. You must create the Cosmos resource with the correct API type in order for the feature flag to work correctly. 
+1. Once you create the resource, copy the `.env.sample` file into a new `.env` file and set your values for your resource. This includes setting the `COSMOSDB_API` feature flag value, used in `/src/server.js`. 
+1. Run the application. The web app displays the insert/delete form for one Cosmos resource only. 
+
+### Feature flag values
+
+The value for the COSMOS DB `API` determines what type of database is available in Cosmos DB. The choices are:
+
+* `SQLAPI`: SQL API -> CORE API -> GlobalDocumentDB
+* `MONGODB`: MongoDB - default value

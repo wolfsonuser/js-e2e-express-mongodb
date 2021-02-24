@@ -5,21 +5,22 @@ require('dotenv').config();
 
 /* eslint no-return-await: 0 */
 
-const DATABASE_URL = process.env.DATABASE_URL
-    ? process.env.DATABASE_URL
+const DATABASE_URL = process.env.COSMOSDB_MONGODB_CONNECTION_STRING
+    ? process.env.COSMOSDB_MONGODB_CONNECTION_STRING
     : 'mongodb://localhost:27017';
-const DATABASE_NAME = process.env.DATABASE_NAME || 'my-tutorial-db';
+const DATABASE_NAME = process.env.COSMOSDB_MONGODB_DATABASE_NAME || 'my-tutorial-db';
 const DATABASE_COLLECTION_NAME =
-    process.env.DATABASE_COLLECTION_NAME || 'my-collection';
+    process.env.COSMOSDB_MONGODB_COLLECTION_NAME
+    || 'my-collection';
 
 let mongoConnection = null;
 let db = null;
 
 /* eslint no-console: 0 */
-console.log(`DB:${DATABASE_URL}`);
+//console.log(`DB:${DATABASE_URL}`);
 
-const insertDocuments = async (
-    documents = [{ a: 1 }, { a: 2 }, { a: 3 }]
+const insert = async (
+    documents
 ) => {
     // check params
     if (!db || !documents)
@@ -31,8 +32,9 @@ const insertDocuments = async (
     // Insert some documents
     return await collection.insertMany(documents);
 };
-const findDocuments = async (
-    query = { a: 3 }
+const find = async (
+    // default is find all
+    query = {}
 ) => {
     
     // check params
@@ -43,11 +45,13 @@ const findDocuments = async (
     const collection = await db.collection(DATABASE_COLLECTION_NAME );
 
     // find documents
-    return await collection.find(query).toArray();
+    const items = await collection.find(query).toArray();
+    
+    return items;
 };
 
-const removeDocuments = async (
-    docFilter = {}
+const remove= async (
+    id = null
 ) => {
     
     // check params
@@ -57,8 +61,10 @@ const removeDocuments = async (
     // Get the documents collection
     const collection = await db.collection(DATABASE_COLLECTION_NAME);
 
+    const docs = id ? { _id: ObjectId(id) } : {};
+    
     // Delete document
-    return await collection.deleteMany(docFilter);
+    return await collection.deleteMany(docs);
 };
 
 const connect = async (url) => {
@@ -92,9 +98,8 @@ const connectToDatabase = async () => {
     }
 };
 module.exports = {
-    insertDocuments,
-    findDocuments,
-    removeDocuments,
-    ObjectId,
+    insert,
+    find,
+    remove,
     connectToDatabase
 };

@@ -3,16 +3,29 @@ const express = require('express');
 const render = require('express-react-views');
 const bodyParser = require('body-parser');
 const path = require('path');
+require('dotenv').config();
+
+const { timeStamp } = require("./utils/utils")
+
+const dataMONGODB =  require('./azure/azure-cosmosdb-mongodb');
+const dataSQLAPI = require('./azure/azure-cosmosdb-sql-api');
+
+let data = null;
 
 // data dependency
-const data = require('./data');
+switch (process.env.COSMOSDB_API) {
+    case "MONGODB":
+        data = dataMONGODB
+        break;
+    case "SQLAPI":
+        data = dataSQLAPI
+        break;
+    default:
+        throw new Error("feature flag for COSMOS DB is missing from `.env` file.")
+}
 
 
-const timeStamp = (req) => {
-    const date = new Date();
-    const currentTimeStamp = date.getTime();
-    console.log(`${currentTimeStamp} - ${req.protocol}//${req.headers.host}${req.originalUrl}`);
-};
+
 
 const create = async () => {
 
@@ -39,7 +52,7 @@ const create = async () => {
 
         // get all items
         initialData.data = dbConnected
-            ? await data.findDocuments({})
+            ? await data.find()
             : initialData;
 
         // return react front-end
@@ -54,7 +67,7 @@ const create = async () => {
             const newItem = [req.body];
 
             // insert params to db
-            await data.insertDocuments(newItem);
+            await data.insert(newItem);
         }
 
         // return react front-end
@@ -64,17 +77,10 @@ const create = async () => {
     app.get('/delete', async (req, res) => {
         timeStamp(req);
 
-        const docs = req.query && req.query.id ? { _id: data.ObjectId(req.query.id) } : {};
+        const docs = req.query && req.query.id ? req.query.id : null;
 
         // delete
-        await data.removeDocuments(docs);
-
-        res.redirect('/');
-    });
-
-    // instead of 404 - just return home page
-    app.get('*', (req, res) => {
-        timeStamp(req);
+        await data.remove(docs);
 
         res.redirect('/');
     });
